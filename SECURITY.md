@@ -6,7 +6,6 @@
 | Version | Supported          |
 | ------- | ------------------ |
 | 0.0.1x  | :x: |
-| ------- | ------------------ |
 
 ## Reporting a Vulnerability
 
