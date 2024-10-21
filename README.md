@@ -2,6 +2,9 @@
 # 👋🏻 3D Maker
 A plugin for blender that uses Mushy's API to create models
 
+# No professional
+I am no professional so if you contribute keep that in mind
+
 # 🤷🏻‍♂️ Faqs
 
 ### How to Download and use this plugin?
