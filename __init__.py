@@ -1,5 +1,5 @@
 bl_info = {
-    "name": "Your Add-on Name",
+    "name": "3D-Maker",
     "blender": (4, 2, 3),  # Change to your supported Blender version
     "category": "3D View",  # Change to the appropriate category
     "author": "Austin Cabler",
