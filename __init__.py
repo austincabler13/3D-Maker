@@ -6,9 +6,10 @@ bl_info = {
     "category": "3D View",  # Change to the appropriate category
     "author": "Austin Cabler",
     "version": (0, 1, 3),
-    "description": "A plugin for blender that uses Mushy's API to create models",
+    "description": "A plugin for Blender that uses Meshy's API to create models",
     "support": "COMMUNITY",
-    "url": "https://github.com/austincabler13/3D-Maker/",
+    "url": "https://github.com/austincabler13/3D-Maker/"
+    
 }
 
 def register():
