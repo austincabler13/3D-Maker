@@ -1,6 +1,6 @@
+import bpy
 import requests
-import tkinter as tk
-from tkinter import messagebox
+import webbrowser
 
 class MeshyAPI:
     def __init__(self, api_key):
@@ -8,12 +8,10 @@ class MeshyAPI:
         self.base_url = "https://api.meshy.ai"
 
     def generate_3d_model(self, input_data):
-        # Make API request to generate 3D model
         url = f"{self.base_url}/generate_3d_model"
         headers = {"Authorization": f"Bearer {self.api_key}"}
         try:
             response = requests.post(url, json=input_data, headers=headers)
-            # Check for errors in the response
             if response.status_code == 200:
                 return response.json()
             else:
@@ -21,39 +19,62 @@ class MeshyAPI:
         except requests.exceptions.RequestException as e:
             return {"status": "error", "message": str(e)}
 
-def submit():
-    api_key = api_key_entry.get()
-    input_data = input_data_entry.get("1.0", tk.END).strip()
+class MeshyOperator(bpy.types.Operator):
+    bl_idname = "mesh.generate_3d_model"
+    bl_label = "Generate 3D Model"
     
-    if not api_key or not input_data:
-        messagebox.showerror("Error", "API key and input data are required")
-        return
+    api_key: bpy.props.StringProperty(name="API Key")
+    input_data: bpy.props.StringProperty(name="Input Data")
+
+    def execute(self, context):
+        meshy_api = MeshyAPI(self.api_key)
+        result = meshy_api.generate_3d_model({"input": self.input_data})
+        
+        if result.get("status") == "error":
+            self.report({'ERROR'}, result["message"])
+        else:
+            self.report({'INFO'}, "3D model generated successfully")
+        
+        return {'FINISHED'}
+
+class MeshyPanel(bpy.types.Panel):
+    bl_label = "Meshy API 3D Model Generator"
+    bl_idname = "PANEL_PT_meshy_api"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Meshy"
+
+    def draw(self, context):
+        layout = self.layout
+        operator = layout.operator(MeshyOperator.bl_idname)
+        layout.prop(operator, "api_key")
+        layout.prop(operator, "input_data")
+
+        # Add a label with a link to the pricing
+        layout.label(text="Note: You need an API key for usage.")
+        layout.operator("wm.open_url", text="Meshy API Pricing").url = "https://api.meshy.ai/pricing"
+        
+class WM_OT_OpenURL(bpy.types.Operator):
+    """Open a URL in the default web browser"""
+    bl_idname = "wm.open_url"
+    bl_label = "Open URL"
     
-    meshy_api = MeshyAPI(api_key)
-    result = meshy_api.generate_3d_model(input_data)
-    
-    if result["status"] == "error":
-        messagebox.showerror("Error", result["message"])
-    else:
-        messagebox.showinfo("Success", "3D model generated successfully")
+    url: bpy.props.StringProperty()
 
-# Create the main window
-root = tk.Tk()
-root.title("Meshy API 3D Model Generator")
+    def execute(self, context):
+        webbrowser.open(self.url)
+        return {'FINISHED'}
 
-# Create and place the API key label and entry
-tk.Label(root, text="API Key:").grid(row=0, column=0, padx=10, pady=10)
-api_key_entry = tk.Entry(root, width=50)
-api_key_entry.grid(row=0, column=1, padx=10, pady=10)
 
-# Create and place the input data label and text box
-tk.Label(root, text="Input Data:").grid(row=1, column=0, padx=10, pady=10)
-input_data_entry = tk.Text(root, width=50, height=10)
-input_data_entry.grid(row=1, column=1, padx=10, pady=10)
+def register():
+    bpy.utils.register_class(MeshyAPI)
+    bpy.utils.register_class(MeshyOperator)
+    bpy.utils.register_class(MeshyPanel)
 
-# Create and place the submit button
-submit_button = tk.Button(root, text="Submit", command=submit)
-submit_button.grid(row=2, column=0, columnspan=2, pady=10)
+def unregister():
+    bpy.utils.unregister_class(MeshyPanel)
+    bpy.utils.unregister_class(MeshyOperator)
+    bpy.utils.unregister_class(MeshyAPI)
 
-# Run the application
-root.mainloop()
+if __name__ == "__main__":
+    register()
