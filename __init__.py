@@ -3,7 +3,7 @@ bl_info = {
     "blender": (4, 2, 3),
     "category": "3D View",
     "author": "Austin Cabler",
-    "version": (0, 1, 4),
+    "version": (0, 2, 5),
     "description": "A plugin for Blender that uses Meshy's API to create models",
     "support": "COMMUNITY",
     "url": "https://github.com/austincabler13/3D-Maker/",
@@ -18,19 +18,19 @@ from .plugin import MeshyAPI
 class MeshyOperator(bpy.types.Operator):
     bl_idname = "mesh.generate_3d_model"
     bl_label = "Generate 3D Model"
-    
+
     api_key: bpy.props.StringProperty(name="API Key")
     input_data: bpy.props.StringProperty(name="Input Data")
 
     def execute(self, context):
         meshy_api = MeshyAPI(self.api_key)
         result = meshy_api.generate_3d_model({"input": self.input_data})
-        
+
         if result.get("status") == "error":
             self.report({'ERROR'}, result["message"])
         else:
             self.report({'INFO'}, "3D model generated successfully")
-        
+
         return {'FINISHED'}
 
 class MeshyPanel(bpy.types.Panel):
@@ -40,21 +40,30 @@ class MeshyPanel(bpy.types.Panel):
     bl_region_type = 'UI'
     bl_category = "Meshy"
 
+    # Properties for the API Key and Input Data
+    api_key: bpy.props.StringProperty(name="API Key")
+    input_data: bpy.props.StringProperty(name="Input Data")
+
     def draw(self, context):
         layout = self.layout
-        operator = layout.operator(MeshyOperator.bl_idname)
-        layout.prop(operator, "api_key")
-        layout.prop(operator, "input_data")
+
+        # Use the panel's properties
+        layout.prop(self, "api_key")
+        layout.prop(self, "input_data")
+
+        # Add a button to generate the model
+        layout.operator(MeshyOperator.bl_idname, text="Generate 3D Model").api_key = self.api_key
+        layout.operator(MeshyOperator.bl_idname, text="Generate 3D Model").input_data = self.input_data
 
         # Add a label with a link to the pricing
         layout.label(text="Note: You need an API key for usage.")
-        layout.operator("wm.open_url", text="Meshy API Pricing").url = "https://api.meshy.ai/pricing"
-        
+        layout.operator("wm.open_url", text="Meshy API Pricing").url = "https://docs.meshy.ai/api-introduction#pricing"
+
 class WM_OT_OpenURL(bpy.types.Operator):
     """Open a URL in the default web browser"""
     bl_idname = "wm.open_url"
     bl_label = "Open URL"
-    
+
     url: bpy.props.StringProperty()
 
     def execute(self, context):
