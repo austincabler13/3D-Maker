@@ -69,10 +69,12 @@ class WM_OT_OpenURL(bpy.types.Operator):
 def register():
     bpy.utils.register_class(MeshyOperator)
     bpy.utils.register_class(MeshyPanel)
+    bpy.utils.register_class(WM_OT_OpenURL)
 
 def unregister():
     bpy.utils.unregister_class(MeshyPanel)
     bpy.utils.unregister_class(MeshyOperator)
+    bpy.utils.unregister_class(WM_OT_OpenURL)
 
 if __name__ == "__main__":
     register()

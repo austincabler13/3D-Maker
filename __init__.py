@@ -8,3 +8,15 @@ bl_info = {
     "support": "COMMUNITY",
     "url": "https://github.com/austincabler13/3D-Maker/",
 }
+
+# Import the plugin module
+from . import plugin
+
+def register():
+    plugin.register()  # Register the classes from plugin.py
+
+def unregister():
+    plugin.unregister()  # Unregister the classes from plugin.py
+
+if __name__ == "__main__":
+    register()
