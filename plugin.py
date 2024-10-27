@@ -5,7 +5,7 @@ from tkinter import messagebox
 class MeshyAPI:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.base_url = "https://www.meshy.ai/api"
+        self.base_url = "https://api.meshy.ai"
 
     def generate_3d_model(self, input_data):
         # Make API request to generate 3D model
